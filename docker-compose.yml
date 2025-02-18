@@ -144,10 +144,11 @@ services:
     networks:
       - ecommerce-network
     healthcheck:
-      test: ["CMD-SHELL", "echo srvr | nc localhost 2181"]
+      test: ["CMD-SHELL", "echo srvr | nc localhost 2181 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 15s
 
   kafka:
     image: confluentinc/cp-kafka:7.0.1
@@ -166,10 +167,11 @@ services:
     networks:
       - ecommerce-network
     healthcheck:
-      test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list"]
+      test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 30s
 
   # Zipkin
   zipkin:
@@ -223,17 +225,6 @@ services:
     volumes:
       - redis-data:/data
 
-  # RabbitMQ
-  rabbitmq:
-    image: rabbitmq:3.9-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    networks:
-      - ecommerce-network
-    volumes:
-      - rabbitmq-data:/var/lib/rabbitmq
-
   # Vault
   vault:
     image: vault:1.13
@@ -256,5 +247,4 @@ volumes:
   postgres-order-data:
   postgres-user-data:
   elasticsearch-data:
-  redis-data:
-  rabbitmq-data: 
+  redis-data: 
