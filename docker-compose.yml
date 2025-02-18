@@ -1,6 +1,19 @@
 version: '3.8'
 
 services:
+  # Config Service
+  config-service:
+    build: ./config-service
+    ports:
+      - "8888:8888"
+    networks:
+      - ecommerce-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   # Discovery Service
   discovery-service:
     build: ./discovery-service
@@ -13,6 +26,9 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    depends_on:
+      config-service:
+        condition: service_healthy
 
   # Product Service
   product-service:

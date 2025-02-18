@@ -15,4 +15,12 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     operationsSorter: method
-  packages-to-scan: com.ecommerce.product.controller 
+  packages-to-scan: com.ecommerce.product.controller
+
+spring:
+  application:
+    name: product-service
+  cloud:
+    config:
+      uri: http://config-service:8888
+      fail-fast: true 
