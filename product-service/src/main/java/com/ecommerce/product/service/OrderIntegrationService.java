@@ -1,5 +1,7 @@
 package com.ecommerce.product.service;
 
+import com.ecommerce.product.dto.OrderRequest;
+import com.ecommerce.product.dto.OrderResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,7 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 public class OrderIntegrationService {
     
     private final WebClient.Builder webClientBuilder;
+    private static final String ORDER_SERVICE_URL = "http://order-service/api/orders";
     
     /**
      * Circuit Breaker ile korunan order service çağrısı
@@ -23,13 +26,18 @@ public class OrderIntegrationService {
      */
     @CircuitBreaker(name = "orderService", fallbackMethod = "createOrderFallback")
     public OrderResponse createOrder(OrderRequest orderRequest) {
-        return webClientBuilder.build()
-            .post()
-            .uri("http://order-service/api/orders")
-            .bodyValue(orderRequest)
-            .retrieve()
-            .bodyToMono(OrderResponse.class)
-            .block();
+        try {
+            return webClientBuilder.build()
+                .post()
+                .uri(ORDER_SERVICE_URL)
+                .bodyValue(orderRequest)
+                .retrieve()
+                .bodyToMono(OrderResponse.class)
+                .block();
+        } catch (Exception e) {
+            log.error("Error creating order: {}", e.getMessage());
+            throw new RuntimeException("Failed to create order", e);
+        }
     }
     
     /**

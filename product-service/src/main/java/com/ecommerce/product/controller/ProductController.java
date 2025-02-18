@@ -9,7 +9,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -24,14 +26,17 @@ public class ProductController {
     
     private final ProductService productService;
     
-    @Operation(summary = "Get all products", description = "Retrieve list of all products")
+    @Operation(summary = "Get all products")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successfully retrieved list"),
         @ApiResponse(responseCode = "204", description = "No products found")
     })
     @GetMapping
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
-        // ... mevcut kod
+        List<ProductDTO> products = productService.getAllProducts();
+        return products.isEmpty() ? 
+            ResponseEntity.noContent().build() : 
+            ResponseEntity.ok(products);
     }
     
     @Operation(summary = "Get product by ID", description = "Retrieve specific product by ID")
@@ -44,7 +49,7 @@ public class ProductController {
         @Parameter(description = "Product ID", required = true)
         @PathVariable Long id
     ) {
-        // ... mevcut kod
+        return ResponseEntity.ok(productService.getProduct(id));
     }
     
     @Operation(summary = "Create new product", description = "Add new product to catalog")
@@ -55,9 +60,9 @@ public class ProductController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductDTO> createProduct(
-        @RequestBody @Valid ProductCreateDTO productDTO
+        @RequestBody @Valid ProductCreateDTO productCreateDTO
     ) {
-        // ... mevcut kod
+        return ResponseEntity.ok(productService.createProduct(productCreateDTO));
     }
     
     @Operation(summary = "Update product", description = "Update existing product details")
@@ -70,9 +75,9 @@ public class ProductController {
     public ResponseEntity<ProductDTO> updateProduct(
         @Parameter(description = "Product ID", required = true)
         @PathVariable Long id,
-        @RequestBody @Valid ProductUpdateDTO productDTO
+        @RequestBody @Valid ProductUpdateDTO productUpdateDTO
     ) {
-        // ... mevcut kod
+        return ResponseEntity.ok(productService.updateProduct(id, productUpdateDTO));
     }
     
     @Operation(summary = "Delete product", description = "Remove product from catalog")
@@ -86,6 +91,7 @@ public class ProductController {
         @Parameter(description = "Product ID", required = true)
         @PathVariable Long id
     ) {
-        // ... mevcut kod
+        productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
     }
 } 

@@ -1,22 +1,25 @@
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+package com.ecommerce.product.domain;
 
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
 @Entity
 @Table(name = "products")
-@Getter
-@Setter
+@AllArgsConstructor
 @NoArgsConstructor
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @NotNull
     @Column(nullable = false)
     private String name;
     
     @Column(nullable = false)
-    private BigDecimal price;
+    private Double price;
     
     @Column(nullable = false)
     private Integer stock;
