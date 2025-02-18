@@ -8,22 +8,26 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Tag(name = "Authentication", description = "Authentication management APIs")
 public class AuthController {
     
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
     private final UserDetailsService userDetailsService;
     
-    /**
-     * Kullanıcı girişi endpoint'i
-     * 1. Kullanıcı bilgilerini doğrula
-     * 2. JWT token oluştur
-     * 3. Token'ı response olarak dön
-     */
+    @Operation(summary = "Login user", description = "Authenticate user and return JWT token")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully authenticated"),
+        @ApiResponse(responseCode = "401", description = "Invalid credentials")
+    })
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
@@ -49,5 +53,17 @@ public class AuthController {
         
         // Token'ı response olarak dön
         return ResponseEntity.ok(new JwtResponse(token));
+    }
+
+    @Operation(summary = "Register new user", description = "Create new user account")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "User successfully created"),
+        @ApiResponse(responseCode = "400", description = "Invalid input data")
+    })
+    @PostMapping("/register")
+    public ResponseEntity<?> register(
+        @RequestBody @Valid RegisterRequest registerRequest
+    ) {
+        // ... mevcut kod
     }
 } 
