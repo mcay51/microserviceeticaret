@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: user-service
+  datasource:
+    url: jdbc:postgresql://postgres-user:5434/userdb
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+jwt:
+  secret: your-secret-key
+  expiration: 86400
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://discovery-service:8761/eureka/
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+  packages-to-scan: com.ecommerce.user.controller 
