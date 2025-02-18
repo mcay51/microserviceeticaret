@@ -68,10 +68,6 @@ build/
 ### VS Code ###
 .vscode/
 
-
-
-
-
 ### OS specific ###
 # Mac
 .DS_Store
@@ -87,11 +83,11 @@ Desktop.ini
 # Microservice specific logs
 */logs/
 
-
-
-
 # Temporary files
 *.tmp
 *.bak
 *.swp
-*~ 
+*~
+
+# Config repository
+ecommerce-config/ 

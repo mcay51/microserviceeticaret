@@ -1,3 +1,6 @@
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+
 @Entity
 @Table(name = "products")
 @Getter
@@ -8,6 +11,7 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @NotNull
     @Column(nullable = false)
     private String name;
     
