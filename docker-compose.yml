@@ -171,6 +171,82 @@ services:
       timeout: 10s
       retries: 3
 
+  # Zipkin
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - ecommerce-network
+
+  # Elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.10
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+    networks:
+      - ecommerce-network
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+
+  # Logstash
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.17.10
+    ports:
+      - "5000:5000"
+    networks:
+      - ecommerce-network
+    volumes:
+      - ./logstash/config:/usr/share/logstash/config
+    depends_on:
+      - elasticsearch
+
+  # Kibana
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.10
+    ports:
+      - "5601:5601"
+    networks:
+      - ecommerce-network
+    depends_on:
+      - elasticsearch
+
+  # Redis
+  redis:
+    image: redis:6.2
+    ports:
+      - "6379:6379"
+    networks:
+      - ecommerce-network
+    volumes:
+      - redis-data:/data
+
+  # RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3.9-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - ecommerce-network
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
+  # Vault
+  vault:
+    image: vault:1.13
+    ports:
+      - "8200:8200"
+    environment:
+      - VAULT_DEV_ROOT_TOKEN_ID=myroot
+      - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200
+    cap_add:
+      - IPC_LOCK
+    networks:
+      - ecommerce-network
+
 networks:
   ecommerce-network:
     driver: bridge
@@ -178,4 +254,7 @@ networks:
 volumes:
   postgres-product-data:
   postgres-order-data:
-  postgres-user-data: 
+  postgres-user-data:
+  elasticsearch-data:
+  redis-data:
+  rabbitmq-data: 
